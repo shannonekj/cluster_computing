@@ -14,15 +14,45 @@ Image modified from (http://www.vrlab.umu.se/documentation/guides/beginner-guide
 
 ### Job Schedulers
 
-Job schedulers handle how to allocate the compute cluster's resources to batch jobs submitted by users. The job scheduler evaulates when resources will be dedicated to a job based on the:
+In order to carry out commands that are memory intensive we need to use auxillary computers that will not affect the login/head node. As a note, sometimes merely copying large files is memory intensive enough that we will need to use other computers! To request resources to run our scripts we use job schedulers. Job schedulers handle how to allocate the compute cluster's resources to batch job scripts submitted by users.
 
-* job priority
+There are a number of different flavors of job schedulers specific to the cluster you will use through your institution but they all have the following general structure:
+
+![](https://i.imgur.com/9rSbIxR.png)
+
+The job scheduler evaulates when resources will be dedicated to a job based on the:
+* job's priority
 * group's resources already taken up
-* wall time requested
-* resources requested
+* requested wall time
+* requested resources
+    * memory
+    * CPUs
 
 
-** Slurm ** 
+**Slurm** [workload manager](https://slurm.schedmd.com/documentation.html)
+
+Slurm is an open source workload manager that is commonly used on compute clusters (both the FARM and barbera use Slurm). It handles allocating resources requested by batch scripts. 
+
+There are **two** main ways you can request resources using Slurm:
+
+#### 1. Run an **interactive** session.
+
+Interactive sessions allow you to work on computers that aren't the login/head node. Essentially you can do everything you've done at the command line interface on Jetstream on the compute cluster. This is really powerful for doing memory intensive commands that you may not need to keep track of. However, with this power comes a great danger as the commands you run will not be save in a script anywhere. So, if you wanted to go back and recreate an analysis, you won't know what you've run or with which versions of software.
+
+To request and launch a basic interactive session that will last for two hours use the following:
+```
+srun --time=02:00:00 --pty /bin/bash
+```
+
+Pay close attention to the time you give to yourself using `srun`! Slurm will terminate the session immediately at the end of the allotted time. It, sadly, doesn't care if you are 99.99% of the way through your analysis :0]
+
+Also, you can request more/different resources by using to following flags:
+* `--mem=<number>Gb` request memory
+* `-c <number>` request a certain number of CPUs
+
+
+#### 2. 
+ 
 
 * commands
     * sbatch -- Command to submit a job (batch script) to the Slurm scheduler
@@ -47,16 +77,13 @@ Job schedulers handle how to allocate the compute cluster's resources to batch j
         * by job number
         * by username
 
-** General Use **
+**General Use**
 
 * space left for group
-
 ```
 df -h | grep <username>
 ```
-
 * how much space you are taking up
-
 ```
 du -d 0 -h
 ``` 
