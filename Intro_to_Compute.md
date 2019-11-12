@@ -1,11 +1,15 @@
-## General Information
-# What is a cluster?
-# How do clusters work?
-* General structure
-    * head node
-    * job schedulers
-* slurm
-    * explain structure of Slurm
+# General Information
+## What is a cluster?
+## How do clusters work?
+
+### General structure
+<center><img src="https://i.imgur.com/2nl5zzP.png" width="50%"></a></center>
+###### Image modified from (http://www.vrlab.umu.se/documentation/guides/beginner-guide)
+
+
+
+** Job Schedulers **
+* Slurm
     * commands
         * sbatch -- Command to submit a job (batch script) to the Slurm scheduler
             * cpu
