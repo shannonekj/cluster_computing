@@ -25,5 +25,15 @@
             * -u
             * -p
     * srun -- Command to run parallel jobs
-    * explain flags (internal & external)
-        * c
+    * scancel -- Command to cancel jobs submitted to Slurm
+        * by job number
+        * by username
+* general use
+    * space left for group
+```
+df -h | grep <username>
+```
+    * how much space you are taking up
+```
+du -d 0 -h
+``` 
