@@ -35,7 +35,7 @@ Slurm is an open source workload manager that is commonly used on compute cluste
 
 There are **two** main ways you can request resources using Slurm:
 
-#### 1. Run an interactive session.
+#### 1. Run an interactive session with `srun`
 
 Interactive sessions allow you to work on computers that aren't the login/head node. Essentially you can do everything you've done at the command line interface on Jetstream on the compute cluster. This is really powerful for doing memory intensive commands that you may not need to keep track of. However, with this power comes a great danger as the commands you run will not be save in a script anywhere. So, if you wanted to go back and recreate an analysis, you won't know what you've run or with which versions of software.
 
@@ -51,7 +51,7 @@ Also, you can request more/different resources by using to following flags:
 * `-c <number>` request a certain number of CPUs
 
 
-#### 2.Submit batch scripts with `sbatch`
+#### 2. Submit batch scripts with `sbatch`
 
 Batch job scripts (also known as job scripts) are scripts that contain `#!/bin/bash` at the beginning of each script and are submitted to the slurm workload manager by using `sbatch`. When we submit a script to slurm it is considered a _job_ and gets a unique job ID assigned to it.
 
