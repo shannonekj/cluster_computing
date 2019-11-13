@@ -83,6 +83,52 @@ sbatch -t 00-00:05:00 HelloWorld.sh
 You will see your job was successfully submitted and an associated Job ID number `Submitted batch job 15219016`
 
 
+We can use a number of different flags to specify resources we want from Slurm:
+* the **partition** we would like to use for our job––oftentimes this will also entail the _priority_ in which our job is submitted. We can request a partition by using the following flag: `-p <name_of_partition>`
+* the **memory** required to run our job. We can request a specified amount of time with the following flag: `--mem=<number>Gb`
+* we can have slurm **mail** us updates about our job, such as when it starts(`BEGIN`), ends(`END`), if it fails(`FAIL`) or all of the above (`ALL`). We can request slurm emails us with the following flag: `--mail-user=<your_email> --mail-type=ALL`
+* we can also give jobs specific **names**. To name your job use: `-J <job_name>` Be careful, as there is a limit to the number of characters your job name can be.
+* slurm automatically generates output scripts where all of the output from commands run from the script are printed to. These will take the form as `slurm12345.out` where 12345 is the unique identifying number slurm assigns to the file. We can change this to any output file name we want. To specify the name of your output file use `-o <file_name>.out`
+* slurm can generate error files, where all of the errors from the script are printed to. We ask slurm to create err files and name them with `-e <file_name>.err`
+
+If we were hard to ourselves we would write these out at the command line each time we submitted a job to slurm with `sbatch`. It would look something like this:
+```
+sbatch --time=01-02:03:04 -p <name_of_partition> --mem=<number>Gb --mail-user=<your_email> --mail-type=ALL -J <job_name> -o <file_name>.out -e <file_name>.err
+```
+We will ned to switch out the <text> with parameters specific to our preference, but hopefully you get the gist. Not only is typing all of the parameters out on the command line annoying but it also doesn't allow us to record what parameters we used easily.
+
+
+#### Repeatibility
+
+One of the most important things in science is repeatability. This sentiment holds true in bioinformatics experiments as well. However, it is exceptionally easy to run a series of command on data, leave the data for a few months (or years) and come back to the data and have no clue how you went from point A to point Z. It is hard, if not impossible to recreate an analysis with exactly the same string of commands and parameters so we should think about documenting things as we go. In the worst case scenario you have to recreate an analysis and in the best case of forgetting to document commands, you may have to tweak how you submit your job scripts to slurm.
+
+We can make this easy for our _future_ forgetful-selves and put all of the flags we submit our Slurm jobs with INSIDE our batch scripts!
+
+Take a look at the `HelloUniverse.sh` script
+```
+cat HelloUniverse.sh
+```
+
+```
+#!/bin/bash
+#
+#SBATCH --mail-user=sejoslin@ucdavis.edu        # YOUR EMAIL ADDRESS
+#SBATCH --mail-type=ALL                         # NOTIFICATIONS OF SLURM JOB STATUS - ALL, NONE, BEGIN, END, FAIL, REQUEUE
+#SBATCH -J HelloUni                             # JOB ID
+#SBATCH -e HelloUniverse.j%j.err                # STANDARD ERROR FILE TO WRITE TO
+#SBATCH -o HelloUniverse.j%j.out                # STANDARD OUTPUT FILE TO WRITE TO
+#SBATCH -c 4                                    # NUMBER OF PROCESSORS PER TASK
+#SBATCH --ntasks=8                              # MINIMUM NUMBER OF NODES TO ALLOCATE TO JOB
+#SBATCH --mem=4gb                               # MEMORY POOL TO ALL CORES
+#SBATCH --time=01-00:00:48                      # REQUESTED WALL TIME
+#SBATCH -p high                                 # PARTITION TO SUBMIT TO
+
+echo Hello Universe
+date
+```
+
+
+
 #### Monitor your jobs with `squeue`
 
 Oftentimes we submit jobs and would like to know certain things about them -- if they've started, how long they've been running, if they are still running, etc, etc... We can look at the status of any job Slurm is handling by using `squeue`
@@ -112,71 +158,42 @@ then we see **ALL** the jobs currently submitted to Slurm -- which usually quite
 squeue -u <username>
 ```
 ```
-
+         JOBID PARTITION     NAME     USER ST        TIME  NODES CPU MIN_ME NODELIST(REASON)
+      15219530       med HoldWorl sejoslin  R        0:28      1 1   2000M  c11-72
 ```
+Much better!! 
+
+Not only can you check on your own job's status but you can also check on the status of your group:
+```
+squeue -A <group_name>
+```
+or check on the status of particular partitions:
+```
+squeue -p <partition_name>
+```
+
+This will help you figure out what resources your group is using so you can figure out which are free.
+
+
+
 
 
 #### Cancel your jobs with `scancel`
 
-
-
-#### Repeatibility
-
-One of the most important things in science is repeatability. This sentiment holds true in bioinformatics experiments as well. However, it is exceptionally easy to run a series of command on data, leave the data for a few months (or years) and come back to the data and have no clue how you went from point A to point Z. It is hard, if not impossible to recreate an analysis with exactly the same string of commands and parameters so we should think about documenting things as we go. In the worst case scenario you have to recreate an analysis and in the best case of forgetting to document commands, you may have to tweak how you submit your job scripts to slurm. 
-
-We can make this easy for our _future_ forgetful-selves and put all of the flags we submit our Slurm jobs with INSIDE our batch scripts!
-
-Take a look at the `HelloUniverse.sh` script
+To cancel a single job you can specify the JOBID
 ```
-cat HelloUniverse.sh
+scancel 15219530
 ```
 
+To cancel all of the jobs that belong to you, use the `-u`flag.
 ```
-#!/bin/bash
-#
-#SBATCH --mail-user=sejoslin@ucdavis.edu        # YOUR EMAIL ADDRESS
-#SBATCH --mail-type=ALL                         # NOTIFICATIONS OF SLURM JOB STATUS
-#SBATCH -J HelloUni                             # JOB ID
-#SBATCH -e HelloUniverse.j%j.err                # STANDARD ERROR FILE TO WRITE TO
-#SBATCH -o HelloUniverse.j%j.out                # STANDARD OUTPUT FILE TO WRITE TO
-#SBATCH -c 4                                    # NUMBER OF PROCESSORS PER TASK
-#SBATCH --ntasks=8                              # MINIMUM NUMBER OF NODES TO ALLOCATE TO JOB
-#SBATCH --mem=4gb                               # MEMORY POOL TO ALL CORES
-#SBATCH --time=01-00:00:48                      # REQUESTED WALL TIME
-#SBATCH -p high                                 # PARTITION TO SUBMIT TO
-
-echo Hello Universe
-date
+squeue -u <user_name>
 ```
 
 
 
 
-
-* commands
-    * sbatch -- Command to submit a job (batch script) to the Slurm scheduler
-        * cpu
-        * nodes
-        * partitions
-        * memory
-    * sinfo -- Commnd to get information about Slurm nodes and partiions
-        * PARTITION
-        * AVAIL
-        * TIMELIMIT
-        * NODES
-        * STATE
-        * NODELIST
-        * -p
-    * squeue -- Command to view information about jobs located in the Slurm scheduling queue.
-        * -A
-        * -u
-        * -p
-    * srun -- Command to run parallel jobs
-    * scancel -- Command to cancel jobs submitted to Slurm
-        * by job number
-        * by username
-
-**General Use**
+**Other General Use**
 
 * space left for group
 ```
