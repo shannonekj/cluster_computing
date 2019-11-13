@@ -154,7 +154,7 @@ then we see _many_ rows of jobs...
       15144205   bigmemm AA_plant jgillung PD        0:00      1 24  200G   (Priority)
       15144210   bigmemm NT_plant jgillung PD        0:00      1 24  200G   (Priority)
 ```
-then we see **ALL** the jobs currently submitted to Slurm -- which usually quite a few! And often we won't be able to just scroll through the list to find our job(s). So, in order to only see your own jobs we can specify our username:
+This is a list of **ALL** the jobs currently submitted to Slurm -- which usually quite a few! And often we won't be able to just scroll through the list to find our job(s). So, in order to only see your own jobs we can specify our username:
 ```
 squeue -u <username>
 ```
@@ -177,8 +177,6 @@ This will help you figure out what resources your group is using so you can figu
 
 
 
-
-
 #### Cancel your jobs with `scancel`
 
 To cancel a single job you can specify the JOBID
@@ -194,7 +192,9 @@ squeue -u <user_name>
 
 
 
-**Other General Use**
+### Space Issues
+
+Each group only has so much space on the cluster. Memory can be bought but it is good practice to always compress and delete files as we run analyses. That way, we won't have an extra terrabyte of unnecessary sequence data files hanging around.  
 
 * space left for group
 ```
@@ -204,3 +204,14 @@ df -h | grep <username>
 ```
 du -d 0 -h
 ``` 
+
+### Nodes vs CPUs vs tasks
+
+* **Node**: A physical box that connects memory systems with extension cards and CPU cores. (On Barbera you can only request **one** node or else your job will fail)
+* **CPU Core**: An independent computing unit that can access a certain number of _CPU threads_ with all the threads having independent input streams but sharing the core's total memory.
+* **tasks**: This is 
+
+The `-c` flag will adjust the number of CPUs per process. Alter this if the job is multithreaded and requires more than one CPU per task to perform optimally. If this option is specified without the -n flag, then as many tasks will be allocated to per node as possible.
+The `-n` flag will determine the number of tasks to run. The default Slurm setting is one task per node but is adjusted when using -c. 
+
+<center><img src="https://i.imgur.com/aNKNrXS.png" width="50%"></a></center>
