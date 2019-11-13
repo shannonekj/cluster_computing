@@ -137,10 +137,11 @@ Let's submit the `HoldWorld.sh` to slurm:
 ```
 sbatch -t 00-01:10:00 HoldWorld.sh
 ```
-If only type
+If we only type
 ```
 squeue
 ```
+then we see _many_ rows of jobs...
 ```
          JOBID PARTITION     NAME     USER ST        TIME  NODES CPU MIN_ME NODELIST(REASON)
       15218450       bmh this_is_ keyu1996 CG       31:10      1 2   100G   bm3
