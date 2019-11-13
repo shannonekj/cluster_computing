@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+#SBATCH --mail-user=sejoslin@ucdavis.edu 	# YOUR EMAIL ADDRESS
+#SBATCH --mail-type=ALL				# NOTIFICATIONS OF SLURM JOB STATUS
+#SBATCH -J HelloUni				# JOB ID
+#SBATCH -e HelloUniverse.j%j.err		# STANDARD ERROR FILE TO WRITE TO
+#SBATCH -o HelloUniverse.j%j.out		# STANDARD OUTPUT FILE TO WRITE TO
+#SBATCH -c 4					# NUMBER OF PROCESSORS PER TASK
+#SBATCH --ntasks=8				# MINIMUM NUMBER OF NODES TO ALLOCATE TO JOB
+#SBATCH --mem=4gb				# MEMORY POOL TO ALL CORES
+#SBATCH --time=01-00:00:48			# REQUESTED WALL TIME
+#SBATCH -p high					# PARTITION TO SUBMIT TO
+
+echo Hello Universe
+date 
