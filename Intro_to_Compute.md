@@ -214,4 +214,4 @@ du -d 0 -h
 The `-c` flag will adjust the number of CPUs per process. Alter this if the job is multithreaded and requires more than one CPU per task to perform optimally. If this option is specified without the -n flag, then as many tasks will be allocated to per node as possible.
 The `-n` flag will determine the number of tasks to run. The default Slurm setting is one task per node but is adjusted when using -c. 
 
-<center><img src="https://i.imgur.com/a/aNKNrXS.png" width="50%"></a></center>
+<center><img src="https://i.imgur.com/4cercJV.png" width="50%"></a></center>
