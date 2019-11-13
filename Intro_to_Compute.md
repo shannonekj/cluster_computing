@@ -91,7 +91,29 @@ Let's submit the `HoldWorld.sh` to slurm:
 ```
 sbatch -t 00-01:10:00 HoldWorld.sh
 ```
+If only type
+```
+squeue
+```
+```
+         JOBID PARTITION     NAME     USER ST        TIME  NODES CPU MIN_ME NODELIST(REASON)
+      15218450       bmh this_is_ keyu1996 CG       31:10      1 2   100G   bm3
+      15219413       bmh     pigz   aminio CG        0:01      1 8   4G     bm2
+15108157_[34-4   bigmemm  mapping gfburgue PD        0:00      1 8   200G   (Resources)
+14204771_[1182       med freebaye eoziolor PD        0:00      1 4   2000M  (AssocGrpCpuLimit)
+15217722_[7-23       bmm     trim hansvgdu PD        0:00      1 2   10G    (JobArrayTaskLimit)
+      15113687   bigmemm AA_ophiu jgillung PD        0:00      1 24  200G   (Priority)
+      15144078   bigmemm NT_ophiu jgillung PD        0:00      1 24  200G   (Priority)
+      15144205   bigmemm AA_plant jgillung PD        0:00      1 24  200G   (Priority)
+      15144210   bigmemm NT_plant jgillung PD        0:00      1 24  200G   (Priority)
+```
+then we see **ALL** the jobs currently submitted to Slurm -- which usually quite a few! And often we won't be able to just scroll through the list to find our job(s). So, in order to only see your own jobs we can specify our username:
+```
+squeue -u <username>
+```
+```
 
+```
 
 
 #### Cancel your jobs with `scancel`
