@@ -1,13 +1,12 @@
 # Intro to Compute
 
-
 ## What is a cluster?
 
 A cluster can be thought of as a group of computers which work together to allow you to log onto one computer (**head node**) and use resources to perform memory intensive functions from other connected computers.
 
-<center><img src="https://i.imgur.com/2nl5zzP.png" width="50%"></a></center>
+<center><img src="https://i.imgur.com/2nl5zzP.png" width="80%"></a></center>
 
-Image modified from [vrlab](http://www.vrlab.umu.se/documentation/guides/beginner-guide/)
+Image modified from [vrlab](http://www.vrlab.umu.se/documentation/guides/beginner-guide)
 
 ## How do clusters work?
 
@@ -15,15 +14,15 @@ Image modified from [vrlab](http://www.vrlab.umu.se/documentation/guides/beginne
 
 ### Job Schedulers
 
-In order to carry out commands that are memory intensive we need to use auxillary computers that will not affect the login/head node. As a note, sometimes merely copying large files is memory intensive enough that we will need to use other computers! To request resources to run our scripts we use job schedulers. Job schedulers handle how to allocate the compute cluster's resources to batch job scripts submitted by users.
+In order to carry out commands that are memory intensive we need to use auxillary computers that will not affect the login/head node. **NOTE:** sometimes merely copying large files is memory intensive enough that we will need to use computers other than the head node! To request resources to run our scripts we use _job schedulers_. Job schedulers handle how to allocate the compute cluster's resources to batch job scripts submitted by users.
 
-There are a number of different flavors of job schedulers specific to the cluster you will use through your institution but they all have the following general structure:
+There are a number of different flavors of job schedulers. The job scheduler you will be submitting jobs to is specific to the cluster you are using at your institution but they all have the following general structure:
 
 ![](https://i.imgur.com/9rSbIxR.png)
 
 The job scheduler evaulates when resources will be dedicated to a job based on the:
-* job's priority (`-p`)
-* group's resources already taken up
+* partition & priority (`-p`)
+* how much of  the group's resources are already being used
 * requested wall time (`-t`)
 * requested resources
     * memory (`--mem`)
@@ -38,14 +37,17 @@ There are **two** main ways you can request resources using Slurm:
 
 #### 1. Run an interactive session with `srun`
 
-Interactive sessions allow you to work on computers that aren't the login/head node. Essentially you can do everything you've done at the command line interface on Jetstream on the compute cluster. This is really powerful for doing memory intensive commands that you may not need to keep track of. However, with this power comes a great danger as the commands you run will not be save in a script anywhere. So, if you wanted to go back and recreate an analysis, you won't know what you've run or with which versions of software.
+Interactive sessions allow you to work on computers that aren't the login/head node. Essentially you can do everything you've done at the command line interface on Jetstream on the compute cluster. This is really powerful for doing memory intensive commands that you may not need to keep track of. However, with this power comes a great danger. 
+
+*Why is it dangerous?*
+The commands you run will not be saved in scripts anywhere. So, if you wanted to go back and recreate an analysis, you won't know what you've run, how you've run it or which versions of software you used.
 
 To request and launch a basic interactive session that will last for two hours use the following:
 ```
 srun --time=02:00:00 --pty /bin/bash
 ```
 
-Pay close attention to the time you give to yourself using `srun`! Slurm will terminate the session immediately at the end of the allotted time. It, sadly, doesn't care if you are 99.99% of the way through your analysis :0]
+Pay close attention to the time you give to yourself using `srun`! Slurm will terminate the session immediately at the end of the allotted time. It, sadly, doesn't care if you are 99.99% of the way through your analysis :/
 
 Also, you can request more/different resources by using to following flags:
 * `--mem=<number>Gb` = request memory
@@ -55,20 +57,25 @@ Also, you can request more/different resources by using to following flags:
 
 #### 2. Submit batch scripts with `sbatch`
 
-Batch job scripts (also known as job scripts) are scripts that contain `#!/bin/bash` at the beginning of each script and are submitted to the slurm workload manager by using `sbatch`. When we submit a script to slurm it is considered a _job_ and gets a unique job ID assigned to it.
+Batch job scripts (also known as job scripts) are scripts that contain `#!/bin/bash` at the beginning of each script and are submitted to the slurm workload manager by using `sbatch`. When we submit a script to slurm it is considered a _job_ and gets a unique _job ID_ assigned to it.
 
-We can see an example batch script in the **HelloWorld.sh** file
-```
-cat HelloWorld.sh
-```
-```
-#!/bin/bash
+First, let's create a script called **HelloWorlds.sh**.
 
-echo Hello World
-date
+```
+nano HelloWorld.sh
 ```
 
-We can submit this script to **Slurm** with the `sbatch` command.
+Then copy and paste the following:
+> #!/bin/bash
+>
+> echo Hello World
+> sleep 5m
+> date
+
+And exit with <kbd>Crtl+Q</kbd>
+
+
+If you submit this script to **Slurm** with the `sbatch` command.
 ```
 sbatch HelloWorld.sh
 ```
