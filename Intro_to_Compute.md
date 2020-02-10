@@ -6,7 +6,8 @@
 A cluster can be thought of as a group of computers which work together to allow you to log onto one computer (**head node**) and use resources to perform memory intensive functions from other connected computers.
 
 <center><img src="https://i.imgur.com/2nl5zzP.png" width="50%"></a></center>
-Image modified from [here](http://www.vrlab.umu.se/documentation/guides/beginner-guide/)
+
+Image modified from [vrlab](http://www.vrlab.umu.se/documentation/guides/beginner-guide/)
 
 ## How do clusters work?
 
