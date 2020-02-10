@@ -69,7 +69,9 @@ Then copy and paste the following:
 > #!/bin/bash
 >
 > echo Hello World
+
 > sleep 5m
+
 > date
 
 And exit with <kbd>Crtl+Q</kbd>
