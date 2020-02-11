@@ -10,8 +10,6 @@ Image modified from [vrlab](http://www.vrlab.umu.se/documentation/guides/beginne
 
 ## How do clusters work?
 
-
-
 ### Job Schedulers
 
 In order to carry out commands that are memory intensive we need to use auxillary computers that will not affect the login/head node. **NOTE:** sometimes merely copying large files is memory intensive enough that we will need to use computers other than the head node! To request resources to run our scripts we use _job schedulers_. Job schedulers handle how to allocate the compute cluster's resources to batch job scripts submitted by users.
@@ -69,15 +67,13 @@ Then copy and paste the following:
 > #!/bin/bash
 >
 > echo Hello World
-
 > sleep 5m
-
 > date
 
 And exit with <kbd>Crtl+Q</kbd>
 
 
-If you submit this script to **Slurm** with the `sbatch` command.
+We can then submit this script to **Slurm** with the `sbatch` command.
 ```
 sbatch HelloWorld.sh
 ```
@@ -85,34 +81,45 @@ but we receive an error message...
 ```
 sbatch: error: Batch job submission failed: Requested time limit is invalid (missing or exceeds some limit)
 ```
-In order to handle jobs, Slurm needs to know the maximum amount of **walltime** your job will run. Walltimecan be thought of as the amount of time from the start of your code running to when it finishes. We can tell Slurm how much time to dedicate to our submitted script by using the `-t` flag. Let's tell Slurm that our job will take no more than 5 minutes (note: the format is `dd-hh-mm-ss`.
+In order to handle jobs, Slurm needs to know the maximum amount of **walltime** your job will run. Walltime can be thought of as the amount of time from the start of your code running to when the last command in your script finishes. We can tell Slurm how much time to dedicate to our submitted script by using the `-t` flag. Let's tell Slurm that our job will take no more than 6 minutes (note: the format is `dd-hh-mm-ss`.
 
 ```
-sbatch -t 00-00:05:00 HelloWorld.sh
+sbatch -t 00-00:06:00 HelloWorld.sh
 ``` 
-You will see your job was successfully submitted and an associated Job ID number `Submitted batch job 15219016`
+You will see your job was successfully submitted and will be given an associated Job ID number `Submitted batch job 15219016`
 
+#### Flags to use when submitting jobs
 
 We can use a number of different flags to specify resources we want from Slurm:
-* the **partition** we would like to use for our job––oftentimes this will also entail the _priority_ in which our job is submitted. We can request a partition by using the following flag: `-p <name_of_partition>`
+* the **partition** we would like to use for our job––this will also entail the _priority_ in which our job is submitted (priorities can be high, medium or low). We can request a partition by using the following flag: `-p <name_of_partition>`. The farm has the following partitions:
+    * parallel nodes names: `high`, `med`, `low`
+        * 24 nodes with 64 CPUs and 256GBram
+        * 95 nodes with 32 CPUs and 64GB ram
+    * bigmem nodes names: `bmh`, `bmm`, `bml`, `bigmemh`, `bigmemm`, `bigmeml`
+        * 13 nodes 1TB with 96 CPUs
+        * 9 nodes 512GB with 64 CPUs
+        * 1 node 1024GB with 96 CPUs
 * the **memory** required to run our job. We can request a specified amount of time with the following flag: `--mem=<number>Gb`
 * we can have slurm **mail** us updates about our job, such as when it starts(`BEGIN`), ends(`END`), if it fails(`FAIL`) or all of the above (`ALL`). We can request slurm emails us with the following flag: `--mail-user=<your_email> --mail-type=ALL`
 * we can also give jobs specific **names**. To name your job use: `-J <job_name>` Be careful, as there is a limit to the number of characters your job name can be.
-* slurm automatically generates output scripts where all of the output from commands run from the script are printed to. These will take the form as `slurm12345.out` where 12345 is the unique identifying number slurm assigns to the file. We can change this to any output file name we want. To specify the name of your output file use `-o <file_name>.out`
-* slurm can generate error files, where all of the errors from the script are printed to. We ask slurm to create err files and name them with `-e <file_name>.err`
+* slurm automatically generates **output scripts** where all of the output from commands run from the script are printed to. These will take the form as `slurm12345.out` where 12345 is the unique identifying number slurm assigns to the file. We can change this to any output file name we want. To specify the name of your output file use `-o <file_name>.out`
+* slurm can generate **error files**, where all of the errors from the script are printed to. We can ask slurm to create err files and name them with `-e <file_name>.err`
 
 If we were hard to ourselves we would write these out at the command line each time we submitted a job to slurm with `sbatch`. It would look something like this:
 ```
-sbatch --time=01-02:03:04 -p <name_of_partition> --mem=<number>Gb --mail-user=<your_email> --mail-type=ALL -J <job_name> -o <file_name>.out -e <file_name>.err
+sbatch --time=01-02:03:04 -p high --mem=16Gb --mail-user=<your_email> --mail-type=ALL -J <job_name> -o <file_name>.out -e <file_name>.err
 ```
-We will ned to switch out the <text> with parameters specific to our preference, but hopefully you get the gist. Not only is typing all of the parameters out on the command line annoying but it also doesn't allow us to record what parameters we used easily.
+We will ned to switch out the `<text>` with parameters specific to our preference, but hopefully you get the gist. Not only is typing all of the parameters out on the command line annoying but it also doesn't allow us to record what parameters we used easily.
+   
 
 
 #### Repeatibility
 
-One of the most important things in science is repeatability. This sentiment holds true in bioinformatics experiments as well. However, it is exceptionally easy to run a series of command on data, leave the data for a few months (or years) and come back to the data and have no clue how you went from point A to point Z. It is hard, if not impossible to recreate an analysis with exactly the same string of commands and parameters so we should think about documenting things as we go. In the worst case scenario you have to recreate an analysis and in the best case of forgetting to document commands, you may have to tweak how you submit your job scripts to slurm.
+One of the most important things in science is repeatability. This sentiment holds true in bioinformatics experiments as well. However, it is exceptionally easy to run a series of command on data, leave the data for a few months (or years) and come back to the data and have no clue how you went from point A to point Z. 
 
-We can make this easy for our _future_ forgetful-selves and put all of the flags we submit our Slurm jobs with INSIDE our batch scripts!
+Let's say we lost everything except our backed up raw data and we needed to recreate an analysis. In the worst case, where  the commands used to carry out the experiment were not saved, we would have to figure out all of the commands with only a vague memory of the steps we took to get results. It is hard, if not impossible to recreate an analysis with exactly the same string of commands and parameters. So, we should think about documenting things as we go.
+
+In the best case (of this terrible scenario) we would have a script to recreate our analysis! So, we can make this easy for our _future_ forgetful-selves and put all of the flags and commands we submit to Slurm  INSIDE our batch scripts!
 
 Take a look at the `HelloUniverse.sh` script
 ```
