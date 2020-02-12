@@ -57,7 +57,7 @@ Also, you can request more/different resources by using to following flags:
 
 Batch job scripts (also known as job scripts) are scripts that contain `#!/bin/bash` at the beginning of each script and are submitted to the slurm workload manager by using `sbatch`. When we submit a script to slurm it is considered a _job_ and gets a unique _job ID_ assigned to it.
 
-First, let's create a script called **HelloWorlds.sh**.
+First, let's create a script called **HelloWorld.sh**.
 
 ```
 nano HelloWorld.sh
@@ -87,7 +87,7 @@ but we receive an error message...
 sbatch: error: Batch job submission failed: Requested time limit is invalid (missing or exceeds some limit)
 ```
 
-In order to handle jobs, Slurm needs to know the maximum amount of **walltime** your job will run. Walltime can be thought of as the amount of time from the start of your code running to when the last command in your script finishes. We can tell Slurm how much time to allow our submitted script by using the `-t` flag. Let's tell Slurm that our job will take no more than 6 minutes (note: the format is `dd-hh-mm-ss`.
+In order to handle jobs, Slurm needs to know the maximum amount of **walltime** your job will run. Walltime can be thought of as the amount of time from the start of your code running to when the last command in your script finishes. We can tell Slurm how much time to allow our submitted script by using the `-t` flag. Let's tell Slurm that our job _shouldn't_ take longer than 5 minutes (note: the format is `dd-hh:mm:ss`).
 
 ```
 sbatch -t 00-00:06:00 HelloWorld.sh
@@ -100,23 +100,23 @@ You will see your job was successfully submitted and will be given an associated
 We can use a number of different flags to specify resources we want from Slurm:
 * the **partition** we would like to use for our job––this will also entail the _priority_ in which our job is submitted (priorities can be high, medium or low). We can request a partition by using the following flag: `-p <name_of_partition>`. The farm has the following partitions:
     * parallel nodes names: `high`, `med`, `low`
-        * 24 nodes with 64 CPUs and 256GBram
+        * 24 nodes with 64 CPUs and 256GB ram
         * 95 nodes with 32 CPUs and 64GB ram
     * bigmem nodes names: `bmh`, `bmm`, `bml`, `bigmemh`, `bigmemm`, `bigmeml`
-        * 13 nodes 1TB with 96 CPUs
-        * 9 nodes 512GB with 64 CPUs
-        * 1 node 1024GB with 96 CPUs
+        * 13 nodes with 96 CPUs and 1TB ram
+        * 9 nodes with 64 CPUs and 512GB 
+        * 1 node with 96 CPUs and 1024GB 
 * the **memory** required to run our job. We can request a specified amount of time with the following flag: `--mem=<number>Gb`
-* we can have slurm **mail** us updates about our job, such as when it starts(`BEGIN`), ends(`END`), if it fails(`FAIL`) or all of the above (`ALL`). We can request slurm emails us with the following flag: `--mail-user=<your_email> --mail-type=ALL`
+* we can have slurm **mail** us updates about our job, such as when it starts(`BEGIN`), ends(`END`), if it fails(`FAIL`) or all of the above (`ALL`). We can request slurm emails us with the following flags: `--mail-user=<your_email> --mail-type=ALL`
 * we can also give jobs specific **names**. To name your job use: `-J <job_name>` Be careful, as there is a limit to the number of characters your job name can be.
-* slurm automatically generates **output scripts** where all of the output from commands run from the script are printed to. These will take the form as `slurm12345.out` where 12345 is the unique identifying number slurm assigns to the file. We can change this to any output file name we want. To specify the name of your output file use `-o <file_name>.out`
+* slurm automatically generates **output scripts** where all of the output from commands run from the script are printed to. These will take the form as `slurm12345.out` where 12345 is an identifying number slurm assigns to the file. We can change this to any output file name we want. To specify the name of your output file use `-o <file_name>.out`
 * slurm can generate **error files**, where all of the errors from the script are printed to. We can ask slurm to create err files and name them with `-e <file_name>.err`
 
 If we were hard to ourselves we would write these out at the command line each time we submitted a job to slurm with `sbatch`. It would look something like this:
 ```
-sbatch --time=01-02:03:04 -p high --mem=16Gb --mail-user=<your_email> --mail-type=ALL -J <job_name> -o <file_name>.out -e <file_name>.err
+sbatch --time=01-02:03:04 -p high --mem=4Gb --mail-user=<your_email> --mail-type=ALL -J <job_name> -o <file_name>.out -e <file_name>.err
 ```
-We will ned to switch out the `<text>` with parameters specific to our preference, but hopefully you get the gist. Not only is typing all of the parameters out on the command line annoying but it also doesn't allow us to record what parameters we used easily.
+We will ned to switch out all of the `<text>` with parameters specific to our preference, but hopefully you get the gist. We can make this easier on ourselves: typing all of the parameters out on the command line everytime we want to submit a batch script is annoying and it also doesn't allow us to record what parameters we used easily.
 
 Luckily there is a way to put the parameters for each job in the script we submit to slurm!
    
@@ -144,7 +144,7 @@ We can do this by adding **#SBATCH** lines of code after the shebang line (`#!/b
 #SBATCH --ntasks=1                              # MINIMUM NUMBER OF NODES TO ALLOCATE TO JOB
 #SBATCH --mem=1Gb                               # MEMORY POOL TO ALL CORES
 #SBATCH --time=00-00:11:00                      # REQUESTED WALL TIME
-#SBATCH -p high                                 # PARTITION TO SUBMIT TO
+#SBATCH -p low                                 # PARTITION TO SUBMIT TO
 
 echo Hello World
 sleep 10m
@@ -209,7 +209,7 @@ Not only can you check on your own job's status but you can also check on the st
 squeue -A <group_name>
 ```
 
-If you do not know what group you are a part of, you can check:
+If you do not know what group you are a part of, you can check!
 ```
 groups
 ```
