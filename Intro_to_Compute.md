@@ -64,13 +64,14 @@ nano HelloWorld.sh
 ```
 
 Then copy and paste the following:
-> #!/bin/bash
->
-> echo Hello World
->
-> sleep 5m
->
-> date
+
+```
+#!/bin/bash
+
+echo Hello World
+sleep 1m
+date
+```
 
 Then exit nano with <kbd>Crtl+Q</kbd>
 
@@ -131,40 +132,46 @@ In the best case (of this terrible scenario) we would have a script to recreate 
 
 We can do this by adding **#SBATCH** lines of code after the shebang line (`#!/bin/bash`) in our script.
 
->#!/bin/bash
->#
->#SBATCH --mail-user=sejoslin@ucdavis.edu        # YOUR EMAIL ADDRESS
->#SBATCH --mail-type=ALL                         # NOTIFICATIONS OF SLURM JOB STATUS - ALL, NONE, BEGIN, END, FAIL, REQUEUE
->#SBATCH -J HelloWorld                           # JOB ID
->#SBATCH -e HelloWorld.j%j.err                   # STANDARD ERROR FILE TO WRITE TO
->#SBATCH -o HelloWorld.j%j.out                   # STANDARD OUTPUT FILE TO WRITE TO
->#SBATCH -c 4                                    # NUMBER OF PROCESSORS PER TASK
->#SBATCH --ntasks=8                              # MINIMUM NUMBER OF NODES TO ALLOCATE TO JOB
->#SBATCH --mem=1Gb                               # MEMORY POOL TO ALL CORES
->#SBATCH --time=00-00:10:00                      # REQUESTED WALL TIME
->#SBATCH -p high                                 # PARTITION TO SUBMIT TO
->
->echo Hello World
->
->sleep 5m
->
->date
+```
+#!/bin/bash
+#
+#SBATCH --mail-user=<email>@ucdavis.edu        # YOUR EMAIL ADDRESS
+#SBATCH --mail-type=ALL                         # NOTIFICATIONS OF SLURM JOB STATUS - ALL, NONE, BEGIN, END, FAIL, REQUEUE
+#SBATCH -J HelloWorld                           # JOB ID
+#SBATCH -e HelloWorld.j%j.err                   # STANDARD ERROR FILE TO WRITE TO
+#SBATCH -o HelloWorld.j%j.out                   # STANDARD OUTPUT FILE TO WRITE TO
+#SBATCH -c 1                                    # NUMBER OF PROCESSORS PER TASK
+#SBATCH --ntasks=1                              # MINIMUM NUMBER OF NODES TO ALLOCATE TO JOB
+#SBATCH --mem=1Gb                               # MEMORY POOL TO ALL CORES
+#SBATCH --time=00-00:11:00                      # REQUESTED WALL TIME
+#SBATCH -p high                                 # PARTITION TO SUBMIT TO
 
+echo Hello World
+sleep 10m
+date
+```
+
+Make sure to replace your `<email>` with your UC Davis email address.
 
 
 #### Monitor your jobs with `squeue`
 
-Oftentimes we submit jobs and would like to know certain things about them -- if they've started, how long they've been running, if they are still running, etc, etc... We can look at the status of any job Slurm is handling by using `squeue`
+Oftentimes we submit jobs and would like to know certain things about them -- if they've started, how long they've been running, if they are _still_ running, etc, etc... We can look at the status of any job Slurm is handling by using `squeue`
 
-Let's submit the `HoldWorld.sh` to slurm:
+Let's submit the `HelloWorld.sh` to slurm:
+
 ```
-sbatch -t 00-01:10:00 HoldWorld.sh
+sbatch HelloWorld.sh
 ```
-If we only type
+
+If we type
+
 ```
 squeue
 ```
+
 then we see _many_ rows of jobs...
+
 ```
          JOBID PARTITION     NAME     USER ST        TIME  NODES CPU MIN_ME NODELIST(REASON)
       15218450       bmh this_is_ keyu1996 CG       31:10      1 2   100G   bm3
@@ -177,39 +184,55 @@ then we see _many_ rows of jobs...
       15144205   bigmemm AA_plant jgillung PD        0:00      1 24  200G   (Priority)
       15144210   bigmemm NT_plant jgillung PD        0:00      1 24  200G   (Priority)
 ```
-This is a list of **ALL** the jobs currently submitted to Slurm -- which usually quite a few! And often we won't be able to just scroll through the list to find our job(s). So, in order to only see your own jobs we can specify our username:
+
+This is a list of **ALL** the jobs currently submitted to Slurm -- which usually quite a few! And often we won't be able to scroll through the list to find our job(s). So, in order to only see your own job(s) we can specify a **username**:
+
+To find your username you can use the `whoami` command:
+```
+whoami
+```
+
+We can use the output of this to see the status of the jobs associated with a particular username:
+
 ```
 squeue -u <username>
 ```
+
 ```
          JOBID PARTITION     NAME     USER ST        TIME  NODES CPU MIN_ME NODELIST(REASON)
-      15219530       med HoldWorl sejoslin  R        0:28      1 1   2000M  c11-72
+      15219530       med Hello sejoslin  R        0:28      1 1   2000M  c11-72
 ```
 Much better!! 
 
-Not only can you check on your own job's status but you can also check on the status of your group:
+Not only can you check on your own job's status but you can also check on the status of your **group**:
 ```
 squeue -A <group_name>
 ```
-or check on the status of particular partitions:
+
+If you do not know what group you are a part of, you can check:
+```
+groups
+```
+
+You can also check on the status of particular partitions:
 ```
 squeue -p <partition_name>
 ```
 
-This will help you figure out what resources your group is using so you can figure out which are free.
+These will help you figure out what resources are being used so you can figure out which are free.
 
 
 
 #### Cancel your jobs with `scancel`
 
-To cancel a single job you can specify the JOBID
+To cancel a single job you can specify the `JOBID`
 ```
-scancel 15219530
+scancel <job_ID>
 ```
 
 To cancel all of the jobs that belong to you, use the `-u`flag.
 ```
-squeue -u <user_name>
+squeue -u <username>
 ```
 
 
