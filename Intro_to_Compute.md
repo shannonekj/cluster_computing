@@ -67,27 +67,31 @@ Then copy and paste the following:
 > #!/bin/bash
 >
 > echo Hello World
-
+>
 > sleep 5m
-
+>
 > date
 
-And exit with <kbd>Crtl+Q</kbd>
+Then exit nano with <kbd>Crtl+Q</kbd>
 
+We can submit this script to **Slurm** with the `sbatch` command.
 
-We can then submit this script to **Slurm** with the `sbatch` command.
 ```
 sbatch HelloWorld.sh
 ```
+
 but we receive an error message...
+
 ```
 sbatch: error: Batch job submission failed: Requested time limit is invalid (missing or exceeds some limit)
 ```
-In order to handle jobs, Slurm needs to know the maximum amount of **walltime** your job will run. Walltime can be thought of as the amount of time from the start of your code running to when the last command in your script finishes. We can tell Slurm how much time to dedicate to our submitted script by using the `-t` flag. Let's tell Slurm that our job will take no more than 6 minutes (note: the format is `dd-hh-mm-ss`.
+
+In order to handle jobs, Slurm needs to know the maximum amount of **walltime** your job will run. Walltime can be thought of as the amount of time from the start of your code running to when the last command in your script finishes. We can tell Slurm how much time to allow our submitted script by using the `-t` flag. Let's tell Slurm that our job will take no more than 6 minutes (note: the format is `dd-hh-mm-ss`.
 
 ```
 sbatch -t 00-00:06:00 HelloWorld.sh
 ``` 
+
 You will see your job was successfully submitted and will be given an associated Job ID number `Submitted batch job 15219016`
 
 #### Flags to use when submitting jobs
@@ -112,6 +116,8 @@ If we were hard to ourselves we would write these out at the command line each t
 sbatch --time=01-02:03:04 -p high --mem=16Gb --mail-user=<your_email> --mail-type=ALL -J <job_name> -o <file_name>.out -e <file_name>.err
 ```
 We will ned to switch out the `<text>` with parameters specific to our preference, but hopefully you get the gist. Not only is typing all of the parameters out on the command line annoying but it also doesn't allow us to record what parameters we used easily.
+
+Luckily there is a way to put the parameters for each job in the script we submit to slurm!
    
 
 
@@ -121,30 +127,28 @@ One of the most important things in science is repeatability. This sentiment hol
 
 Let's say we lost everything except our backed up raw data and we needed to recreate an analysis. In the worst case, where  the commands used to carry out the experiment were not saved, we would have to figure out all of the commands with only a vague memory of the steps we took to get results. It is hard, if not impossible to recreate an analysis with exactly the same string of commands and parameters. So, we should think about documenting things as we go.
 
-In the best case (of this terrible scenario) we would have a script to recreate our analysis! So, we can make this easy for our _future_ forgetful-selves and put all of the flags and commands we submit to Slurm  INSIDE our batch scripts!
+In the best case (of this terrible scenario) we would have a script to recreate our analysis! So, we can make this easy for our _future_ forgetful-selves and put all of the flags and commands we submit to Slurm INSIDE our batch scripts!
 
-Take a look at the `HelloUniverse.sh` script
-```
-cat HelloUniverse.sh
-```
+We can do this by adding **#SBATCH** lines of code after the shebang line (`#!/bin/bash`) in our script.
 
-```
-#!/bin/bash
-#
-#SBATCH --mail-user=sejoslin@ucdavis.edu        # YOUR EMAIL ADDRESS
-#SBATCH --mail-type=ALL                         # NOTIFICATIONS OF SLURM JOB STATUS - ALL, NONE, BEGIN, END, FAIL, REQUEUE
-#SBATCH -J HelloUni                             # JOB ID
-#SBATCH -e HelloUniverse.j%j.err                # STANDARD ERROR FILE TO WRITE TO
-#SBATCH -o HelloUniverse.j%j.out                # STANDARD OUTPUT FILE TO WRITE TO
-#SBATCH -c 4                                    # NUMBER OF PROCESSORS PER TASK
-#SBATCH --ntasks=8                              # MINIMUM NUMBER OF NODES TO ALLOCATE TO JOB
-#SBATCH --mem=4gb                               # MEMORY POOL TO ALL CORES
-#SBATCH --time=01-00:00:48                      # REQUESTED WALL TIME
-#SBATCH -p high                                 # PARTITION TO SUBMIT TO
-
-echo Hello Universe
-date
-```
+>#!/bin/bash
+>#
+>#SBATCH --mail-user=sejoslin@ucdavis.edu        # YOUR EMAIL ADDRESS
+>#SBATCH --mail-type=ALL                         # NOTIFICATIONS OF SLURM JOB STATUS - ALL, NONE, BEGIN, END, FAIL, REQUEUE
+>#SBATCH -J HelloWorld                           # JOB ID
+>#SBATCH -e HelloWorld.j%j.err                   # STANDARD ERROR FILE TO WRITE TO
+>#SBATCH -o HelloWorld.j%j.out                   # STANDARD OUTPUT FILE TO WRITE TO
+>#SBATCH -c 4                                    # NUMBER OF PROCESSORS PER TASK
+>#SBATCH --ntasks=8                              # MINIMUM NUMBER OF NODES TO ALLOCATE TO JOB
+>#SBATCH --mem=1Gb                               # MEMORY POOL TO ALL CORES
+>#SBATCH --time=00-00:10:00                      # REQUESTED WALL TIME
+>#SBATCH -p high                                 # PARTITION TO SUBMIT TO
+>
+>echo Hello World
+>
+>sleep 5m
+>
+>date
 
 
 
